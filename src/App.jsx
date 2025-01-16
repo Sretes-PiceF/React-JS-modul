@@ -1,48 +1,40 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
 
 const App = () => {
-  const [cars, setCars] = useState ([])
+  const [data, setData] = useState([]);
 
-    const fetchCars = async () => {
-      const response = await fetch ('https://64d358c767b2662bf3dc103e.mockapi.io/api/v1/cars')
-      const data = await response.json();
-      setCars(data)
-    }
-    useEffect (() => {
-      fetchCars()
-    }, [])
-    return (
-      <ul>
-        {
-          cars.map ((car) => (
-            <li>
-              {car.name}
-            </li>
-          ))
-        }
-      </ul>
-    )
-}
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://restaurant-api.dicoding.dev/list');
+        const jsonData = response.data;
+        setData(jsonData);
+        console.log(jsonData)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-export default App
+    fetchData();
+    
+  }, []);
+  return (
+    <div className="flex flex-col space-y-3">
+      <h1>Data From API</h1>
+      <div className="grid grid-cols-3 gap-4">
+        {data.restaurants?.map((item) => (
+          <div className="flex flex-col space-y-3  bg-gray-100 rounded-xl p-5" key={item.id}>
+            <div className="">
+              <img src={`https://restaurant-api.dicoding.dev/images/large/${item.pictureId}`} className="rounded-xl" alt="Gta 6" />
+            </div>
+            <h2 className="font-bold text-2xl">{item.name}</h2>
+            <p>{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-/* <div>
-  <a href="https://vite.dev" target="_blank">
-    <img src={viteLogo} className="logo" alt="Vite logo" />
-  </a>
-  <a href="https://react.dev" target="_blank">
-    <img src={reactLogo} className="logo react" alt="React logo" />
-  </a>
-</div>
-<h1>Vite + React</h1>
-<div className="card">
-  <button onClick={() => setCount((count) => count + 1)}>
-    count is {count}
-  </button>
-  <p>
-    Edit <code>src/App.jsx</code> and save to test HMR
-  </p>
-</div>
-<p className="read-the-docs">
-  Click on the Vite and React logos to learn more
-  </p> */
+export default App;
